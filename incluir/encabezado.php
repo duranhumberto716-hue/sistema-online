@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    <?php
+    $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+    if ($basePath === '') {
+        $basePath = '/';
+    }
+    ?>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="index.php">
+        <a class="navbar-brand" href="<?php echo $basePath; ?>/index.php">
             <img src="https://getbootstrap.com/docs/4.5/assets/brand/bootstrap-solid.svg" width="30" height="30" alt="Logo de Bootstrap" class="d-inline-block align-top">
             Tienda en Línea
         </a>
@@ -18,13 +24,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php">Inicio</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>/index.php">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="carrito.php">Carrito</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>/carrito.php">Carrito</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="pago.php">Pagar</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>/pago.php">Pagar</a>
                 </li>
             </ul>
         </div>

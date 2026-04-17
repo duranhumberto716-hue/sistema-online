@@ -23,18 +23,44 @@ include 'incluir/conexion.php';
             $resultado = $conexion->query($consulta);
 
             if ($resultado->num_rows > 0) {
+                $indice_producto = 0;
                 while ($producto = $resultado->fetch_assoc()) {
-                    // Concatenar la ruta de la carpeta con el nombre del archivo
-                    $ruta_imagen = 'recursos/imagenes/' . $producto['imagen'];
+                    // Mantener imagen fija en el primer producto y usar BD para los demas
+                    $nombre_imagen = basename((string)($producto['imagen'] ?? ''));
+                    $rutas_posibles = [];
+                    if ($nombre_imagen !== '') {
+                        $rutas_posibles[] = 'recursos/imagenes/' . $nombre_imagen;
+                        $rutas_posibles[] = 'recursos/' . $nombre_imagen;
+                    }
+
+                    $ruta_imagen = '';
+                    if ($indice_producto === 0 && is_file(__DIR__ . '/recursos/imagen1.jpg')) {
+                        $ruta_imagen = 'recursos/imagen1.jpg';
+                    } else {
+                        foreach ($rutas_posibles as $ruta) {
+                            if (!empty($ruta) && is_file(__DIR__ . '/' . $ruta)) {
+                                $ruta_imagen = $ruta;
+                                break;
+                            }
+                        }
+                    }
+
+                    if ($ruta_imagen !== '') {
+                        $bloque_imagen = '<a href="' . $ruta_imagen . '" target="_blank">'
+                            . '<div class="card-img-top" style="height: 200px; overflow: hidden;">'
+                            . '<img src="' . $ruta_imagen . '" class="img-fluid" alt="' . $producto['nombre'] . '" style="width: 100%; object-fit: cover; height: 100%;">'
+                            . '</div>'
+                            . '</a>';
+                    } else {
+                        $bloque_imagen = '<div class="card-img-top" style="height: 200px; background: #f1f3f5;"></div>';
+                    }
+
+                    $indice_producto++;
 
                     echo '
                     <div class="col-md-4 mb-4">
                         <div class="card">
-                            <a href="' . $ruta_imagen . '" target="_blank">
-                                <div class="card-img-top" style="height: 200px; overflow: hidden;">
-                                    <img src="' . $ruta_imagen . '" class="img-fluid" alt="' . $producto['nombre'] . '" style="width: 100%; object-fit: cover; height: 100%;">
-                                </div>
-                            </a>
+                            ' . $bloque_imagen . '
                             <div class="card-body">
                                 <h5 class="card-title">' . $producto['nombre'] . '</h5>
                                 <p class="card-text">' . $producto['descripcion'] . '</p>
