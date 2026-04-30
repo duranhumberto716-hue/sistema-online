@@ -9,36 +9,21 @@ if (!isset($_SESSION['admin'])) {
 
 // Incluir la conexión a la base de datos
 include '../incluir/conexion.php';
+require_once '../Controlador/ProductoControlador.php';
+
+$productoControlador = new ProductoControlador($conexion);
 
 // Manejar el envío del formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nombre = $_POST['nombre'];
-    $descripcion = $_POST['descripcion'];
-    $precio = $_POST['precio'];
-    $stock = $_POST['stock'];
+    $resultado = $productoControlador->crearProducto($_POST, $_FILES['imagen'] ?? []);
 
-    // Manejo de la imagen
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
-        $nombre_imagen = basename($_FILES['imagen']['name']);
-        $ruta_destino = '../recursos/imagenes/' . $nombre_imagen;
-
-        // Mover la imagen al directorio de destino
-        if (move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_destino)) {
-            // Guardar la información en la base de datos
-            $consulta = "INSERT INTO productos (nombre, descripcion, precio, imagen, stock) VALUES ('$nombre', '$descripcion', $precio, '$nombre_imagen', $stock)";
-            if ($conexion->query($consulta)) {
-                $mensaje = "Producto agregado con éxito.";
-                header("Location: gestion_productos.php?mensaje=" . urlencode($mensaje));
-                exit();
-            } else {
-                $error = "Error al guardar el producto: " . $conexion->error;
-            }
-        } else {
-            $error = "Error al subir la imagen.";
-        }
-    } else {
-        $error = "No se ha seleccionado una imagen o hubo un error al subirla.";
+    if (!empty($resultado['ok'])) {
+        $mensaje = 'Producto agregado con exito.';
+        header('Location: gestion_productos.php?mensaje=' . urlencode($mensaje));
+        exit();
     }
+
+    $error = (string)($resultado['error'] ?? 'No se pudo agregar el producto.');
 }
 ?>
 
@@ -53,6 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Agregar Nuevo Producto</h2>
+        <div class="text-right mb-3">
+            <a href="../index.php" class="btn btn-info">Volver al inicio</a>
+        </div>
         <?php if (isset($error)) { echo '<div class="alert alert-danger">' . $error . '</div>'; } ?>
         <form action="" method="POST" enctype="multipart/form-data">
             <div class="form-group">

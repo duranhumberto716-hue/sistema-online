@@ -5,13 +5,20 @@ if (!isset($_SESSION['admin'])) {
     exit();
 }
 include '../incluir/conexion.php';
+require_once '../Controlador/ProductoControlador.php';
+
+$productoControlador = new ProductoControlador($conexion);
 
 if (isset($_GET['accion']) && $_GET['accion'] == 'eliminar' && isset($_GET['id'])) {
     $id_producto = (int)$_GET['id'];
-    $conexion->query("DELETE FROM productos WHERE id_producto = $id_producto");
-    header("Location: gestion_productos.php");
+    $ok = $productoControlador->eliminarProducto($id_producto);
+    $mensaje = $ok ? 'Producto eliminado con exito.' : 'No se pudo eliminar el producto.';
+    header('Location: gestion_productos.php?mensaje=' . urlencode($mensaje));
     exit();
 }
+
+$productos = $productoControlador->listarProductos();
+$mensaje = isset($_GET['mensaje']) ? trim((string)$_GET['mensaje']) : '';
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +32,11 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'eliminar' && isset($_GET['id']
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Gestión de Productos</h2>
+        <?php if ($mensaje !== ''): ?>
+            <div class="alert alert-info"><?php echo htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'); ?></div>
+        <?php endif; ?>
         <div class="text-right mb-3">
+            <a href="../index.php" class="btn btn-info mr-2">Volver al inicio</a>
             <a href="agregar_producto.php" class="btn btn-success">Agregar Producto</a>
             <a href="cerrar_sesion.php" class="btn btn-danger">Cerrar Sesión</a>
         </div>
@@ -41,29 +52,7 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'eliminar' && isset($_GET['id']
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $consulta = "SELECT * FROM productos";
-                $resultado = $conexion->query($consulta);
-                if ($resultado->num_rows > 0) {
-                    while ($producto = $resultado->fetch_assoc()) {
-                        echo '
-                        <tr>
-                            <td>' . $producto['id_producto'] . '</td>
-                            <td>' . $producto['nombre'] . '</td>
-                            <td>' . $producto['descripcion'] . '</td>
-                            <td>$' . number_format($producto['precio'], 2) . '</td>
-                            <td>' . $producto['stock'] . '</td>
-                            <td>
-                                <a href="editar_producto.php?id=' . $producto['id_producto'] . '" class="btn btn-warning btn-sm">Editar</a>
-                                <a href="gestion_productos.php?accion=eliminar&id=' . $producto['id_producto'] . '" class="btn btn-danger btn-sm" onclick="return confirm(\'¿Estás seguro de que quieres eliminar este producto?\')">Eliminar</a>
-                            </td>
-                        </tr>
-                        ';
-                    }
-                } else {
-                    echo '<tr><td colspan="6" class="text-center">No hay productos disponibles.</td></tr>';
-                }
-                ?>
+                <?php include '../Vista/productos/tabla_productos.php'; ?>
             </tbody>
         </table>
     </div>

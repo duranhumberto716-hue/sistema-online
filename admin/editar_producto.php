@@ -9,15 +9,15 @@ if (!isset($_SESSION['admin'])) {
 
 // Incluir la conexión a la base de datos
 include '../incluir/conexion.php';
+require_once '../Controlador/ProductoControlador.php';
+
+$productoControlador = new ProductoControlador($conexion);
 
 // Obtener el producto a editar
 if (isset($_GET['id'])) {
     $id_producto = (int)$_GET['id'];
-    $consulta = "SELECT * FROM productos WHERE id_producto = $id_producto";
-    $resultado = $conexion->query($consulta);
-    if ($resultado->num_rows == 1) {
-        $producto = $resultado->fetch_assoc();
-    } else {
+    $producto = $productoControlador->obtenerProducto($id_producto);
+    if ($producto === null) {
         header("Location: gestion_productos.php");
         exit();
     }
@@ -28,34 +28,20 @@ if (isset($_GET['id'])) {
 
 // Manejar el envío del formulario para actualizar el producto
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nombre = $_POST['nombre'];
-    $descripcion = $_POST['descripcion'];
-    $precio = $_POST['precio'];
-    $stock = $_POST['stock'];
-    $nombre_imagen = $producto['imagen']; // Imagen actual por defecto
+    $resultado = $productoControlador->actualizarProducto(
+        $id_producto,
+        $_POST,
+        $_FILES['imagen'] ?? [],
+        (string)$producto['imagen']
+    );
 
-    // Verificar si se ha subido una nueva imagen
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
-        $nombre_imagen = basename($_FILES['imagen']['name']);
-        $ruta_destino = '../recursos/imagenes/' . $nombre_imagen;
-
-        // Mover la nueva imagen al directorio de destino
-        if (move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_destino)) {
-            // Actualizar el campo de imagen en la base de datos
-        } else {
-            $error = "Error al subir la nueva imagen.";
-        }
-    }
-
-    // Actualizar los datos en la base de datos
-    $consulta = "UPDATE productos SET nombre='$nombre', descripcion='$descripcion', precio=$precio, imagen='$nombre_imagen', stock=$stock WHERE id_producto=$id_producto";
-    if ($conexion->query($consulta)) {
-        $mensaje = "Producto actualizado con éxito.";
-        header("Location: gestion_productos.php?mensaje=" . urlencode($mensaje));
+    if (!empty($resultado['ok'])) {
+        $mensaje = 'Producto actualizado con exito.';
+        header('Location: gestion_productos.php?mensaje=' . urlencode($mensaje));
         exit();
-    } else {
-        $error = "Error al actualizar el producto: " . $conexion->error;
     }
+
+    $error = (string)($resultado['error'] ?? 'No se pudo actualizar el producto.');
 }
 ?>
 
@@ -70,6 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Editar Producto</h2>
+        <div class="text-right mb-3">
+            <a href="../index.php" class="btn btn-info">Volver al inicio</a>
+        </div>
         <?php if (isset($error)) { echo '<div class="alert alert-danger">' . $error . '</div>'; } ?>
         <form action="" method="POST" enctype="multipart/form-data">
             <div class="form-group">

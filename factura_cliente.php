@@ -1,7 +1,23 @@
 <?php
-session_start();
+include 'incluir/conexion.php';
+include 'incluir/facturacion.php';
 
-$factura = $_SESSION['ultima_factura'] ?? null;
+$token = trim($_GET['token'] ?? '');
+$factura = null;
+$error = '';
+
+if ($token === '') {
+    $error = 'Token de factura no proporcionado.';
+} else {
+    if (!asegurar_tablas_facturacion($conexion)) {
+        $error = 'No se pudo preparar la estructura de facturacion.';
+    } else {
+        $factura = obtener_factura_por_token($conexion, $token);
+        if ($factura === null) {
+            $error = 'No se encontro una factura valida con ese QR.';
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -9,7 +25,7 @@ $factura = $_SESSION['ultima_factura'] ?? null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compra Exitosa</title>
+    <title>Factura del Cliente</title>
     <link rel="stylesheet" href="recursos/css/estilos.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -39,20 +55,13 @@ $factura = $_SESSION['ultima_factura'] ?? null;
 <body class="factura-fondo">
     <?php include 'incluir/encabezado.php'; ?>
 
-    <div class="container mt-5">
-        <div class="alert alert-success text-center">
-            <h1>¡Gracias por tu compra!</h1>
-            <?php if ($factura): ?>
-                <p>Tu compra fue procesada exitosamente. Tu factura ya fue generada.</p>
-            <?php else: ?>
-                <p>Tu pedido ha sido procesado exitosamente.</p>
-            <?php endif; ?>
-            <a href="index.php" class="btn btn-primary mt-3">Volver al Inicio</a>
-            <button type="button" class="btn btn-outline-secondary mt-3" onclick="window.print();">Imprimir Factura</button>
-        </div>
+    <div class="container mt-5 mb-5">
+        <h2 class="text-center">Consulta de Factura</h2>
 
-        <?php if ($factura): ?>
-            <div class="card factura-card mt-4 mb-5">
+        <?php if ($error !== ''): ?>
+            <div class="alert alert-danger text-center mt-4"><?php echo htmlspecialchars($error); ?></div>
+        <?php elseif ($factura): ?>
+            <div class="card factura-card mt-4">
                 <div class="card-header factura-header">
                     <div class="d-flex align-items-center">
                         <img src="recursos/logo.svg" alt="Logo de la empresa" style="width:56px;height:56px;object-fit:cover;border-radius:10px;margin-right:12px;">
@@ -63,31 +72,11 @@ $factura = $_SESSION['ultima_factura'] ?? null;
                     </div>
                 </div>
                 <div class="card-body">
-                    <?php $fechaCompra = $factura['venta']['fecha_venta'] ?? $factura['fecha']; ?>
-                    <p class="mb-1"><strong>Fecha y hora de compra:</strong> <?php echo htmlspecialchars($fechaCompra); ?></p>
-                    <p class="mb-1"><strong>Cliente:</strong> <?php echo htmlspecialchars($factura['nombre_cliente'] !== '' ? $factura['nombre_cliente'] : 'Cliente'); ?></p>
+                    <p class="mb-1"><strong>Fecha:</strong> <?php echo htmlspecialchars($factura['fecha']); ?></p>
+                    <p class="mb-3"><strong>Cliente:</strong> <?php echo htmlspecialchars($factura['nombre_cliente'] !== '' ? $factura['nombre_cliente'] : 'Cliente'); ?></p>
                     <p class="mb-1"><strong>Correo:</strong> <?php echo htmlspecialchars($factura['correo_cliente'] ?? ''); ?></p>
                     <p class="mb-1"><strong>Telefono:</strong> <?php echo htmlspecialchars($factura['telefono_cliente'] ?? ''); ?></p>
                     <p class="mb-2"><strong>Direccion:</strong> <?php echo htmlspecialchars($factura['direccion_cliente'] ?? ''); ?></p>
-                    <?php if (!empty($factura['venta'])): ?>
-                        <p class="mb-1"><strong>Nro. Venta:</strong> <?php echo htmlspecialchars($factura['venta']['numero_venta']); ?></p>
-                        <p class="mb-3"><strong>Forma de Pago:</strong> <?php echo htmlspecialchars($factura['venta']['forma_pago']); ?></p>
-                    <?php endif; ?>
-
-                    <?php if (!empty($factura['enlace_publico'])): ?>
-                        <p class="mb-1"><strong>Enlace tunel de factura:</strong>
-                            <a href="<?php echo htmlspecialchars($factura['enlace_publico']); ?>" target="_blank">
-                                <?php echo htmlspecialchars($factura['enlace_publico']); ?>
-                            </a>
-                        </p>
-                    <?php endif; ?>
-
-                    <?php if (!empty($factura['qr_url'])): ?>
-                        <div class="mb-3 text-center">
-                            <p class="mb-2"><strong>QR de tu factura</strong></p>
-                            <img src="<?php echo htmlspecialchars($factura['qr_url']); ?>" alt="QR Factura" style="max-width: 220px; border: 1px solid #dee2e6; padding: 8px; border-radius: 6px;">
-                        </div>
-                    <?php endif; ?>
 
                     <div class="table-responsive">
                         <table class="table table-bordered">

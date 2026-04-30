@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title>Logo DURAN</title>
+  <desc>Logo corporativo azul con una D metálica, trazos de circuitos y el texto DURAN.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1e57"/>
+      <stop offset="100%" stop-color="#09163b"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#dfe8fb"/>
+      <stop offset="55%" stop-color="#aab6d8"/>
+      <stop offset="100%" stop-color="#f7fbff"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#76b8ff"/>
+      <stop offset="100%" stop-color="#2f7dff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <g filter="url(#shadow)" transform="translate(0 8)">
+    <g fill="none" stroke="url(#blue)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95">
+      <path d="M109 173H197"/>
+      <path d="M91 214H185"/>
+      <path d="M123 255H204"/>
+      <path d="M104 296H188"/>
+      <path d="M138 337H198"/>
+      <path d="M171 155H197"/>
+      <path d="M154 196H183"/>
+      <path d="M145 237H177"/>
+      <path d="M132 278H172"/>
+      <path d="M156 319H190"/>
+      <circle cx="109" cy="173" r="8" fill="#0b1e57"/>
+      <circle cx="91" cy="214" r="8" fill="#0b1e57"/>
+      <circle cx="123" cy="255" r="8" fill="#0b1e57"/>
+      <circle cx="104" cy="296" r="8" fill="#0b1e57"/>
+      <circle cx="138" cy="337" r="8" fill="#0b1e57"/>
+      <circle cx="171" cy="155" r="8" fill="#0b1e57"/>
+      <circle cx="154" cy="196" r="8" fill="#0b1e57"/>
+      <circle cx="145" cy="237" r="8" fill="#0b1e57"/>
+      <circle cx="132" cy="278" r="8" fill="#0b1e57"/>
+      <circle cx="156" cy="319" r="8" fill="#0b1e57"/>
+    </g>
+
+    <path d="M183 126h76c70 0 126 56 126 126s-56 126-126 126h-76l78-78h-4c50 0 90-40 90-90s-40-90-90-90h-55l-19-19z" fill="url(#metal)"/>
+    <path d="M227 196l-53 53 53 53h40c35 0 64-28 64-64s-29-64-64-64h-40z" fill="url(#bg)"/>
+    <path d="M251 214h17v103h-17z" fill="#f2f6ff"/>
+    <path d="M251 214h17v103h-17z" fill="#000" opacity="0.15"/>
+  </g>
+
+  <g fill="url(#metal)" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" filter="url(#shadow)">
+    <text x="256" y="398" font-size="78" font-weight="600" letter-spacing="20">DURAN</text>
+  </g>
+
+  <g fill="#8cbcff" text-anchor="middle" font-family="Arial, sans-serif" opacity="0.95">
+    <text x="140" y="434" font-size="16" letter-spacing="7">SOFTWARE</text>
+    <circle cx="256" cy="428" r="4" fill="#2f7dff"/>
+    <text x="328" y="434" font-size="16" letter-spacing="6">SOLUCIONES</text>
+    <circle cx="386" cy="428" r="4" fill="#2f7dff"/>
+    <text x="441" y="434" font-size="16" letter-spacing="5">INNOVACION</text>
+  </g>
+</svg>

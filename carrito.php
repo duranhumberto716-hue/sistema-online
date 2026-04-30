@@ -1,40 +1,57 @@
 <?php
 // Incluir la conexión a la base de datos
 include 'incluir/conexion.php';
+require_once 'Controlador/CompraControlador.php';
 
-// Lógica para agregar, actualizar y eliminar productos del carrito
 session_start();
-if (!isset($_SESSION['carrito'])) {
-    $_SESSION['carrito'] = [];
+$compraControlador = new CompraControlador($conexion);
+$error = '';
+
+if (!$compraControlador->asegurarEstructura()) {
+    $error = 'No se pudo preparar la estructura de carrito en la base de datos.';
 }
 
 // Procesar acciones del carrito
-if (isset($_GET['accion']) && isset($_GET['id'])) {
+if ($error === '' && isset($_GET['accion']) && isset($_GET['id'])) {
     $id_producto = (int)$_GET['id'];
+    $sessionId = session_id();
 
     if ($_GET['accion'] == 'agregar') {
-        // Agregar producto al carrito
-        $encontrado = false;
-        foreach ($_SESSION['carrito'] as &$item) {
-            if ($item['id_producto'] == $id_producto) {
-                $item['cantidad']++;
-                $encontrado = true;
-                break;
-            }
+        $cantidadAgregar = (int)($_GET['cantidad'] ?? 1);
+        if ($cantidadAgregar < 1) {
+            $cantidadAgregar = 1;
         }
-        if (!$encontrado) {
-            $_SESSION['carrito'][] = ['id_producto' => $id_producto, 'cantidad' => 1];
+
+        if (!$compraControlador->agregarAlCarrito($sessionId, $id_producto, $cantidadAgregar)) {
+            $error = 'No se pudo agregar el producto al carrito.';
+        }
+    } elseif ($_GET['accion'] == 'actualizar') {
+        $cantidadNueva = (int)($_GET['cantidad'] ?? 0);
+        if ($cantidadNueva < 0) {
+            $cantidadNueva = 0;
+        }
+
+        if (!$compraControlador->actualizarCantidadCarrito($sessionId, $id_producto, $cantidadNueva)) {
+            $error = 'No se pudo actualizar la cantidad del producto.';
         }
     } elseif ($_GET['accion'] == 'eliminar') {
-        // Eliminar producto del carrito
-        foreach ($_SESSION['carrito'] as $indice => $item) {
-            if ($item['id_producto'] == $id_producto) {
-                unset($_SESSION['carrito'][$indice]);
-                break;
-            }
+        if (!$compraControlador->eliminarDelCarrito($sessionId, $id_producto)) {
+            $error = 'No se pudo eliminar el producto del carrito.';
         }
-        $_SESSION['carrito'] = array_values($_SESSION['carrito']);
     }
+}
+
+$sessionId = session_id();
+$itemsCarritoDetallado = $error === '' ? $compraControlador->obtenerCarritoDetallado($sessionId) : [];
+$carritoSesion = $_SESSION['carrito'] ?? [];
+if (!is_array($carritoSesion)) {
+    $carritoSesion = [];
+}
+$compraControlador->sincronizarSesionDesdeBd($sessionId, $carritoSesion);
+
+$total = 0.0;
+foreach ($itemsCarritoDetallado as $itemCarrito) {
+    $total += (float)$itemCarrito['subtotal'];
 }
 ?>
 
@@ -52,6 +69,9 @@ if (isset($_GET['accion']) && isset($_GET['id'])) {
 
     <div class="container mt-5">
         <h1 class="text-center">Carrito de Compras</h1>
+        <?php if ($error !== ''): ?>
+            <div class="alert alert-danger"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+        <?php endif; ?>
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead class="thead-dark">
@@ -64,33 +84,7 @@ if (isset($_GET['accion']) && isset($_GET['id'])) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $total = 0;
-                    if (!empty($_SESSION['carrito'])) {
-                        foreach ($_SESSION['carrito'] as $item) {
-                            $consulta = "SELECT * FROM productos WHERE id_producto = " . $item['id_producto'];
-                            $resultado = $conexion->query($consulta);
-                            if ($resultado->num_rows > 0) {
-                                $producto = $resultado->fetch_assoc();
-                                $subtotal = $producto['precio'] * $item['cantidad'];
-                                $total += $subtotal;
-                                echo '
-                                <tr>
-                                    <td>' . $producto['nombre'] . '</td>
-                                    <td>' . $item['cantidad'] . '</td>
-                                    <td>$' . number_format($producto['precio'], 2) . '</td>
-                                    <td>$' . number_format($subtotal, 2) . '</td>
-                                    <td>
-                                        <a href="carrito.php?accion=eliminar&id=' . $item['id_producto'] . '" class="btn btn-danger btn-sm">Eliminar</a>
-                                    </td>
-                                </tr>
-                                ';
-                            }
-                        }
-                    } else {
-                        echo '<tr><td colspan="5" class="text-center">El carrito está vacío.</td></tr>';
-                    }
-                    ?>
+                    <?php include 'Vista/carrito/filas_carrito.php'; ?>
                 </tbody>
             </table>
         </div>

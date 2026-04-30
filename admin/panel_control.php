@@ -23,6 +23,7 @@ include '../incluir/conexion.php';
     <div class="container mt-5">
         <h2 class="text-center">Panel de Control - Administración</h2>
         <div class="text-right mb-3">
+            <a href="../index.php" class="btn btn-info mr-2">Volver al inicio</a>
             <a href="cerrar_sesion.php" class="btn btn-danger">Cerrar Sesión</a>
         </div>
         <div class="row">
@@ -32,6 +33,15 @@ include '../incluir/conexion.php';
                         <h5 class="card-title">Gestionar Productos</h5>
                         <p class="card-text">Agregar, editar y eliminar productos de la tienda.</p>
                         <a href="gestion_productos.php" class="btn btn-primary">Ir a Gestión de Productos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Compras y Carrito</h5>
+                        <p class="card-text">Ver los productos agregados al carrito y las compras registradas en base de datos.</p>
+                        <a href="historial_compras.php" class="btn btn-primary">Ver historial</a>
                     </div>
                 </div>
             </div>
