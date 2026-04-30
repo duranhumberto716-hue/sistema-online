@@ -26,6 +26,12 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+// Obtener datos para los selects
+$marcas = $conexion->query("SELECT id_marca, nombre FROM Marca ORDER BY nombre")?->fetch_all(MYSQLI_ASSOC) ?? [];
+$industrias = $conexion->query("SELECT id_industria, nombre FROM Industria ORDER BY nombre")?->fetch_all(MYSQLI_ASSOC) ?? [];
+$categorias = $conexion->query("SELECT id_categoria, nombre FROM Categoria ORDER BY nombre")?->fetch_all(MYSQLI_ASSOC) ?? [];
+$proveedores = $conexion->query("SELECT id_proveedor, nombre FROM Proveedor ORDER BY nombre")?->fetch_all(MYSQLI_ASSOC) ?? [];
+
 // Manejar el envío del formulario para actualizar el producto
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $resultado = $productoControlador->actualizarProducto(
@@ -81,6 +87,50 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label for="stock">Stock:</label>
                 <input type="number" class="form-control" id="stock" name="stock" value="<?php echo htmlspecialchars($producto['stock']); ?>" required min="0">
+            </div>
+            <div class="form-group">
+                <label for="id_marca">Marca:</label>
+                <select class="form-control" id="id_marca" name="id_marca" required>
+                    <option value="">Selecciona una marca</option>
+                    <?php foreach ($marcas as $marca): ?>
+                        <option value="<?php echo (int)$marca['id_marca']; ?>" <?php echo ((int)$marca['id_marca'] === (int)$producto['id_marca']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($marca['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_industria">Industria:</label>
+                <select class="form-control" id="id_industria" name="id_industria" required>
+                    <option value="">Selecciona una industria</option>
+                    <?php foreach ($industrias as $industria): ?>
+                        <option value="<?php echo (int)$industria['id_industria']; ?>" <?php echo ((int)$industria['id_industria'] === (int)$producto['id_industria']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($industria['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_categoria">Categoría:</label>
+                <select class="form-control" id="id_categoria" name="id_categoria" required>
+                    <option value="">Selecciona una categoría</option>
+                    <?php foreach ($categorias as $categoria): ?>
+                        <option value="<?php echo (int)$categoria['id_categoria']; ?>" <?php echo ((int)$categoria['id_categoria'] === (int)$producto['id_categoria']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($categoria['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_proveedor">Proveedor (opcional):</label>
+                <select class="form-control" id="id_proveedor" name="id_proveedor">
+                    <option value="">Selecciona un proveedor</option>
+                    <?php foreach ($proveedores as $proveedor): ?>
+                        <option value="<?php echo (int)$proveedor['id_proveedor']; ?>" <?php echo ($producto['id_proveedor'] && (int)$proveedor['id_proveedor'] === (int)$producto['id_proveedor']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($proveedor['nombre']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="form-group">
                 <label for="imagen">Imagen (deja en blanco si no deseas cambiarla):</label>

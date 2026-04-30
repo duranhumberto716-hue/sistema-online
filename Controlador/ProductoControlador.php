@@ -32,6 +32,10 @@ class ProductoControlador
         $descripcion = trim((string)($datos['descripcion'] ?? ''));
         $precio = (float)($datos['precio'] ?? 0);
         $stock = (int)($datos['stock'] ?? 0);
+        $id_marca = (int)($datos['id_marca'] ?? 0);
+        $id_industria = (int)($datos['id_industria'] ?? 0);
+        $id_categoria = (int)($datos['id_categoria'] ?? 0);
+        $id_proveedor = (int)($datos['id_proveedor'] ?? 0);
 
         if ($nombre === '' || $descripcion === '') {
             return ['ok' => false, 'error' => 'Completa los campos requeridos.'];
@@ -45,12 +49,16 @@ class ProductoControlador
             return ['ok' => false, 'error' => 'El stock no puede ser negativo.'];
         }
 
+        if ($id_marca <= 0 || $id_industria <= 0 || $id_categoria <= 0) {
+            return ['ok' => false, 'error' => 'Debes seleccionar marca, industria y categoría.'];
+        }
+
         $imagen = $this->procesarImagen($archivoImagen, true);
         if (!$imagen['ok']) {
             return $imagen;
         }
 
-        $ok = $this->modelo->crear($nombre, $descripcion, $precio, $imagen['imagen_base64'], $stock);
+        $ok = $this->modelo->crear($nombre, $descripcion, $precio, $imagen['imagen_base64'], $stock, $id_marca, $id_industria, $id_categoria, $id_proveedor > 0 ? $id_proveedor : null);
         if (!$ok) {
             return ['ok' => false, 'error' => 'Error al guardar el producto en la base de datos. Verifica el error en los logs del servidor.'];
         }
@@ -64,6 +72,10 @@ class ProductoControlador
         $descripcion = trim((string)($datos['descripcion'] ?? ''));
         $precio = (float)($datos['precio'] ?? 0);
         $stock = (int)($datos['stock'] ?? 0);
+        $id_marca = (int)($datos['id_marca'] ?? 0);
+        $id_industria = (int)($datos['id_industria'] ?? 0);
+        $id_categoria = (int)($datos['id_categoria'] ?? 0);
+        $id_proveedor = (int)($datos['id_proveedor'] ?? 0);
         $imagenBase64 = $imagenActual;
 
         if ($nombre === '' || $descripcion === '') {
@@ -78,6 +90,10 @@ class ProductoControlador
             return ['ok' => false, 'error' => 'El stock no puede ser negativo.'];
         }
 
+        if ($id_marca <= 0 || $id_industria <= 0 || $id_categoria <= 0) {
+            return ['ok' => false, 'error' => 'Debes seleccionar marca, industria y categoría.'];
+        }
+
         if (isset($archivoImagen['error']) && (int)$archivoImagen['error'] !== UPLOAD_ERR_NO_FILE) {
             $imagen = $this->procesarImagen($archivoImagen, false);
             if (!$imagen['ok']) {
@@ -86,7 +102,7 @@ class ProductoControlador
             $imagenBase64 = $imagen['imagen_base64'];
         }
 
-        $ok = $this->modelo->actualizar($idProducto, $nombre, $descripcion, $precio, $imagenBase64, $stock);
+        $ok = $this->modelo->actualizar($idProducto, $nombre, $descripcion, $precio, $imagenBase64, $stock, $id_marca, $id_industria, $id_categoria, $id_proveedor > 0 ? $id_proveedor : null);
         if (!$ok) {
             return ['ok' => false, 'error' => 'Error al actualizar el producto en la base de datos.'];
         }
