@@ -42,13 +42,31 @@ class ProductoModelo
 
     public function crear(string $nombre, string $descripcion, float $precio, string $imagen, int $stock): bool
     {
+        // Validar que el precio sea positivo
+        if ($precio <= 0) {
+            error_log("Error: El precio debe ser mayor a 0. Precio recibido: " . $precio);
+            return false;
+        }
+
+        // Validar que el stock sea no negativo
+        if ($stock < 0) {
+            error_log("Error: El stock no puede ser negativo. Stock recibido: " . $stock);
+            return false;
+        }
+
         $stmt = $this->conexion->prepare('INSERT INTO productos (nombre, descripcion, precio, imagen, stock) VALUES (?, ?, ?, ?, ?)');
         if (!$stmt) {
+            error_log("Error en prepare: " . $this->conexion->error);
             return false;
         }
 
         $stmt->bind_param('ssdsi', $nombre, $descripcion, $precio, $imagen, $stock);
         $ok = $stmt->execute();
+        
+        if (!$ok) {
+            error_log("Error en execute: " . $stmt->error);
+        }
+        
         $stmt->close();
 
         return $ok;

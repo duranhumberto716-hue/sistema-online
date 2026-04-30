@@ -160,43 +160,48 @@ include 'incluir/conexion.php';
             if ($resultado->num_rows > 0) {
                 $indice_producto = 0;
                 while ($producto = $resultado->fetch_assoc()) {
-                    // Usar una imagen relacionada al nombre del producto y luego validar archivos disponibles
-                    $nombre_imagen = basename((string)($producto['imagen'] ?? ''));
-                    $rutas_posibles = [];
-                    if ($nombre_imagen !== '') {
-                        $rutas_posibles[] = 'recursos/imagenes/' . $nombre_imagen;
-                        $rutas_posibles[] = 'recursos/' . $nombre_imagen;
-                    }
-
-                    $ruta_imagen = '';
-                    $nombre_normalizado = strtolower(trim((string)($producto['nombre'] ?? '')));
-
-                    if ($nombre_normalizado !== '' && isset($imagenes_por_producto[$nombre_normalizado])) {
-                        $ruta_candidata = $imagenes_por_producto[$nombre_normalizado];
-                        if (is_file(__DIR__ . '/' . $ruta_candidata)) {
-                            $ruta_imagen = $ruta_candidata;
+                    // Prioridad: usar imagen Base64 de la BD si está disponible
+                    $ruta_imagen = (string)($producto['imagen'] ?? '');
+                    
+                    // Si no hay imagen en BD, buscar archivos de fallback
+                    if ($ruta_imagen === '' || (strpos($ruta_imagen, 'data:image') === false)) {
+                        $nombre_imagen = basename((string)($producto['imagen'] ?? ''));
+                        $rutas_posibles = [];
+                        if ($nombre_imagen !== '') {
+                            $rutas_posibles[] = 'recursos/imagenes/' . $nombre_imagen;
+                            $rutas_posibles[] = 'recursos/' . $nombre_imagen;
                         }
-                    } elseif ($indice_producto === 0 && is_file(__DIR__ . '/recursos/imagen1.jpg')) {
-                        $ruta_imagen = 'recursos/imagen1.jpg';
-                    } elseif ($indice_producto === 1 && is_file(__DIR__ . '/recursos/mouse.jpg')) {
-                        $ruta_imagen = 'recursos/mouse.jpg';
-                    } elseif ($indice_producto === 2 && is_file(__DIR__ . '/recursos/teclado.jpg')) {
-                        $ruta_imagen = 'recursos/teclado.jpg';
-                    } elseif ($indice_producto === 3 && is_file(__DIR__ . '/recursos/monitor.jpg')) {
-                        $ruta_imagen = 'recursos/monitor.jpg';
-                    } elseif ($indice_producto === 4 && is_file(__DIR__ . '/recursos/audifonos.jpg')) {
-                        $ruta_imagen = 'recursos/audifonos.jpg';
-                    } elseif ($indice_producto === 5 && is_file(__DIR__ . '/recursos/Disco-SSD.jpg')) {
-                        $ruta_imagen = 'recursos/Disco-SSD.jpg';
-                    } elseif ($indice_producto === 6 && is_file(__DIR__ . '/recursos/Webcam.jpg')) {
-                        $ruta_imagen = 'recursos/Webcam.jpg';
-                    } elseif ($indice_producto === 7 && is_file(__DIR__ . '/recursos/SILLA-GAMER.jpg')) {
-                        $ruta_imagen = 'recursos/SILLA-GAMER.jpg';
-                    } else {
-                        foreach ($rutas_posibles as $ruta) {
-                            if (!empty($ruta) && is_file(__DIR__ . '/' . $ruta)) {
-                                $ruta_imagen = $ruta;
-                                break;
+
+                        $ruta_imagen = '';
+                        $nombre_normalizado = strtolower(trim((string)($producto['nombre'] ?? '')));
+
+                        if ($nombre_normalizado !== '' && isset($imagenes_por_producto[$nombre_normalizado])) {
+                            $ruta_candidata = $imagenes_por_producto[$nombre_normalizado];
+                            if (is_file(__DIR__ . '/' . $ruta_candidata)) {
+                                $ruta_imagen = $ruta_candidata;
+                            }
+                        } elseif ($indice_producto === 0 && is_file(__DIR__ . '/recursos/imagen1.jpg')) {
+                            $ruta_imagen = 'recursos/imagen1.jpg';
+                        } elseif ($indice_producto === 1 && is_file(__DIR__ . '/recursos/mouse.jpg')) {
+                            $ruta_imagen = 'recursos/mouse.jpg';
+                        } elseif ($indice_producto === 2 && is_file(__DIR__ . '/recursos/teclado.jpg')) {
+                            $ruta_imagen = 'recursos/teclado.jpg';
+                        } elseif ($indice_producto === 3 && is_file(__DIR__ . '/recursos/monitor.jpg')) {
+                            $ruta_imagen = 'recursos/monitor.jpg';
+                        } elseif ($indice_producto === 4 && is_file(__DIR__ . '/recursos/audifonos.jpg')) {
+                            $ruta_imagen = 'recursos/audifonos.jpg';
+                        } elseif ($indice_producto === 5 && is_file(__DIR__ . '/recursos/Disco-SSD.jpg')) {
+                            $ruta_imagen = 'recursos/Disco-SSD.jpg';
+                        } elseif ($indice_producto === 6 && is_file(__DIR__ . '/recursos/Webcam.jpg')) {
+                            $ruta_imagen = 'recursos/Webcam.jpg';
+                        } elseif ($indice_producto === 7 && is_file(__DIR__ . '/recursos/SILLA-GAMER.jpg')) {
+                            $ruta_imagen = 'recursos/SILLA-GAMER.jpg';
+                        } else {
+                            foreach ($rutas_posibles as $ruta) {
+                                if (!empty($ruta) && is_file(__DIR__ . '/' . $ruta)) {
+                                    $ruta_imagen = $ruta;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -209,11 +214,19 @@ include 'incluir/conexion.php';
                     }
 
                     if ($ruta_imagen !== '') {
-                        $bloque_imagen = '<a href="' . $ruta_imagen . '" target="_blank">'
-                            . '<div class="card-img-top product-image-wrap">'
-                            . '<img src="' . $ruta_imagen . '" class="img-fluid" alt="' . $producto['nombre'] . '" style="' . $estilo_imagen . '">'
-                            . '</div>'
-                            . '</a>';
+                        // Si es Base64, no crear link externo
+                        if (strpos($ruta_imagen, 'data:image') === 0) {
+                            $bloque_imagen = '<div class="card-img-top product-image-wrap">'
+                                . '<img src="' . htmlspecialchars($ruta_imagen, ENT_QUOTES, 'UTF-8') . '" class="img-fluid" alt="' . htmlspecialchars($producto['nombre'], ENT_QUOTES, 'UTF-8') . '" style="' . $estilo_imagen . '">'
+                                . '</div>';
+                        } else {
+                            // Archivo físico: crear link externo
+                            $bloque_imagen = '<a href="' . htmlspecialchars($ruta_imagen, ENT_QUOTES, 'UTF-8') . '" target="_blank">'
+                                . '<div class="card-img-top product-image-wrap">'
+                                . '<img src="' . htmlspecialchars($ruta_imagen, ENT_QUOTES, 'UTF-8') . '" class="img-fluid" alt="' . htmlspecialchars($producto['nombre'], ENT_QUOTES, 'UTF-8') . '" style="' . $estilo_imagen . '">'
+                                . '</div>'
+                                . '</a>';
+                        }
                     } else {
                         $bloque_imagen = '<div class="card-img-top product-image-wrap"></div>';
                     }

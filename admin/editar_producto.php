@@ -59,28 +59,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="text-right mb-3">
             <a href="../index.php" class="btn btn-info">Volver al inicio</a>
         </div>
-        <?php if (isset($error)) { echo '<div class="alert alert-danger">' . $error . '</div>'; } ?>
-        <form action="" method="POST" enctype="multipart/form-data">
+        <?php if (isset($error)) { 
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+            echo '<strong>Error:</strong> ' . htmlspecialchars($error);
+            echo '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+            echo '</div>'; 
+        } ?>
+        <form action="" method="POST" enctype="multipart/form-data" id="formProducto">
             <div class="form-group">
                 <label for="nombre">Nombre del producto:</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $producto['nombre']; ?>" required>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($producto['nombre']); ?>" required minlength="3" maxlength="255">
             </div>
             <div class="form-group">
                 <label for="descripcion">Descripción:</label>
-                <textarea class="form-control" id="descripcion" name="descripcion" required><?php echo $producto['descripcion']; ?></textarea>
+                <textarea class="form-control" id="descripcion" name="descripcion" required minlength="5" rows="4"><?php echo htmlspecialchars($producto['descripcion']); ?></textarea>
             </div>
             <div class="form-group">
                 <label for="precio">Precio:</label>
-                <input type="number" step="0.01" class="form-control" id="precio" name="precio" value="<?php echo $producto['precio']; ?>" required>
+                <input type="number" step="0.01" class="form-control" id="precio" name="precio" value="<?php echo htmlspecialchars($producto['precio']); ?>" required min="0.01">
             </div>
             <div class="form-group">
                 <label for="stock">Stock:</label>
-                <input type="number" class="form-control" id="stock" name="stock" value="<?php echo $producto['stock']; ?>" required>
+                <input type="number" class="form-control" id="stock" name="stock" value="<?php echo htmlspecialchars($producto['stock']); ?>" required min="0">
             </div>
             <div class="form-group">
                 <label for="imagen">Imagen (deja en blanco si no deseas cambiarla):</label>
                 <input type="file" class="form-control-file" id="imagen" name="imagen" accept="image/*">
-                <small class="form-text text-muted">Imagen actual: <?php echo $producto['imagen']; ?></small>
+                <small class="form-text text-muted">Formatos permitidos: JPG, PNG, GIF, WebP. Máximo 5MB</small>
+                
+                <?php 
+                // Mostrar imagen actual
+                $imagenActual = (string)($producto['imagen'] ?? '');
+                if ($imagenActual !== '') {
+                    if (strpos($imagenActual, 'data:image') === 0) {
+                        echo '<div style="margin-top: 15px;">';
+                        echo '<strong>Imagen actual:</strong><br>';
+                        echo '<img src="' . htmlspecialchars($imagenActual, ENT_QUOTES, 'UTF-8') . '" style="max-width: 300px; max-height: 300px; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px;">';
+                        echo '</div>';
+                    } else {
+                        echo '<div style="margin-top: 15px;">';
+                        echo '<strong>Imagen actual:</strong> ' . htmlspecialchars($imagenActual);
+                        echo '</div>';
+                    }
+                }
+                ?>
+                
+                <div id="imagenPreview" style="margin-top: 15px; display: none;">
+                    <strong>Nueva imagen:</strong><br>
+                    <img id="previsualizacion" style="max-width: 300px; max-height: 300px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
             </div>
             <button type="submit" class="btn btn-primary">Actualizar Producto</button>
             <a href="gestion_productos.php" class="btn btn-secondary">Volver</a>
@@ -90,5 +117,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        const inputImagen = document.getElementById('imagen');
+        const imagenPreview = document.getElementById('imagenPreview');
+        const previsualizacion = document.getElementById('previsualizacion');
+
+        // Mostrar preview de imagen
+        inputImagen.addEventListener('change', function(e) {
+            const archivo = e.target.files[0];
+            if (archivo) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previsualizacion.src = event.target.result;
+                    imagenPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(archivo);
+            } else {
+                imagenPreview.style.display = 'none';
+            }
+        });
+
+        document.getElementById('formProducto').addEventListener('submit', function(e) {
+            const precio = parseFloat(document.getElementById('precio').value);
+            const stock = parseInt(document.getElementById('stock').value);
+            
+            if (precio <= 0) {
+                e.preventDefault();
+                alert('El precio debe ser mayor a 0');
+                return false;
+            }
+            
+            if (stock < 0) {
+                e.preventDefault();
+                alert('El stock no puede ser negativo');
+                return false;
+            }
+            
+            const imagen = document.getElementById('imagen');
+            if (imagen.files.length > 0) {
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (imagen.files[0].size > maxSize) {
+                    e.preventDefault();
+                    alert('La imagen no puede exceder 5MB');
+                    return false;
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -37,14 +37,22 @@ class ProductoControlador
             return ['ok' => false, 'error' => 'Completa los campos requeridos.'];
         }
 
+        if ($precio <= 0) {
+            return ['ok' => false, 'error' => 'El precio debe ser mayor a 0.'];
+        }
+
+        if ($stock < 0) {
+            return ['ok' => false, 'error' => 'El stock no puede ser negativo.'];
+        }
+
         $imagen = $this->procesarImagen($archivoImagen, true);
         if (!$imagen['ok']) {
             return $imagen;
         }
 
-        $ok = $this->modelo->crear($nombre, $descripcion, $precio, $imagen['nombre'], $stock);
+        $ok = $this->modelo->crear($nombre, $descripcion, $precio, $imagen['imagen_base64'], $stock);
         if (!$ok) {
-            return ['ok' => false, 'error' => 'Error al guardar el producto en la base de datos.'];
+            return ['ok' => false, 'error' => 'Error al guardar el producto en la base de datos. Verifica el error en los logs del servidor.'];
         }
 
         return ['ok' => true];
@@ -56,10 +64,18 @@ class ProductoControlador
         $descripcion = trim((string)($datos['descripcion'] ?? ''));
         $precio = (float)($datos['precio'] ?? 0);
         $stock = (int)($datos['stock'] ?? 0);
-        $nombreImagen = $imagenActual;
+        $imagenBase64 = $imagenActual;
 
         if ($nombre === '' || $descripcion === '') {
             return ['ok' => false, 'error' => 'Completa los campos requeridos.'];
+        }
+
+        if ($precio <= 0) {
+            return ['ok' => false, 'error' => 'El precio debe ser mayor a 0.'];
+        }
+
+        if ($stock < 0) {
+            return ['ok' => false, 'error' => 'El stock no puede ser negativo.'];
         }
 
         if (isset($archivoImagen['error']) && (int)$archivoImagen['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -67,10 +83,10 @@ class ProductoControlador
             if (!$imagen['ok']) {
                 return $imagen;
             }
-            $nombreImagen = $imagen['nombre'];
+            $imagenBase64 = $imagen['imagen_base64'];
         }
 
-        $ok = $this->modelo->actualizar($idProducto, $nombre, $descripcion, $precio, $nombreImagen, $stock);
+        $ok = $this->modelo->actualizar($idProducto, $nombre, $descripcion, $precio, $imagenBase64, $stock);
         if (!$ok) {
             return ['ok' => false, 'error' => 'Error al actualizar el producto en la base de datos.'];
         }
@@ -83,7 +99,7 @@ class ProductoControlador
         if (!isset($archivo['error'])) {
             return $obligatoria
                 ? ['ok' => false, 'error' => 'No se ha seleccionado una imagen.']
-                : ['ok' => true, 'nombre' => ''];
+                : ['ok' => true, 'imagen_base64' => ''];
         }
 
         $errorArchivo = (int)$archivo['error'];
@@ -91,7 +107,7 @@ class ProductoControlador
         if ($errorArchivo === UPLOAD_ERR_NO_FILE) {
             return $obligatoria
                 ? ['ok' => false, 'error' => 'No se ha seleccionado una imagen.']
-                : ['ok' => true, 'nombre' => ''];
+                : ['ok' => true, 'imagen_base64' => ''];
         }
 
         if ($errorArchivo !== UPLOAD_ERR_OK) {
@@ -109,18 +125,25 @@ class ProductoControlador
             return ['ok' => false, 'error' => 'Formato de imagen no permitido.'];
         }
 
-        $base = preg_replace('/[^a-zA-Z0-9_-]/', '_', (string)pathinfo($nombreOriginal, PATHINFO_FILENAME));
-        if ($base === null || $base === '') {
-            $base = 'imagen';
+        // Leer el archivo y convertir a Base64
+        $archivoTemp = (string)($archivo['tmp_name'] ?? '');
+        if (!file_exists($archivoTemp)) {
+            return ['ok' => false, 'error' => 'No se pudo procesar la imagen.'];
         }
 
-        $nombreFinal = $base . '_' . time() . '.' . $extension;
-        $rutaDestino = __DIR__ . '/../recursos/' . $nombreFinal;
-
-        if (!move_uploaded_file((string)$archivo['tmp_name'], $rutaDestino)) {
-            return ['ok' => false, 'error' => 'No se pudo guardar la imagen en recursos.'];
+        $contenidoImagen = file_get_contents($archivoTemp);
+        if ($contenidoImagen === false) {
+            return ['ok' => false, 'error' => 'No se pudo leer la imagen.'];
         }
 
-        return ['ok' => true, 'nombre' => $nombreFinal];
+        // Convertir a Base64
+        $imagenBase64 = 'data:image/' . $extension . ';base64,' . base64_encode($contenidoImagen);
+
+        // Validar tamaño (máximo 5MB en Base64 ~ 3.75MB original)
+        if (strlen($imagenBase64) > 5242880) {
+            return ['ok' => false, 'error' => 'La imagen es demasiado grande (máximo 5MB).'];
+        }
+
+        return ['ok' => true, 'imagen_base64' => $imagenBase64];
     }
 }
