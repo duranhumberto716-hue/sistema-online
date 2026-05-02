@@ -104,8 +104,8 @@ $factura = $_SESSION['ultima_factura'] ?? null;
                                     <tr>
                                         <td><?php echo htmlspecialchars($item['nombre_producto']); ?></td>
                                         <td><?php echo (int)$item['cantidad']; ?></td>
-                                        <td>$<?php echo number_format((float)$item['precio_unitario'], 2); ?></td>
-                                        <td>$<?php echo number_format((float)$item['subtotal'], 2); ?></td>
+                                        <td>Bs. <?php echo number_format((float)$item['precio_unitario'], 2); ?></td>
+                                        <td>Bs. <?php echo number_format((float)$item['subtotal'], 2); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -113,9 +113,9 @@ $factura = $_SESSION['ultima_factura'] ?? null;
                     </div>
 
                     <div class="text-right">
-                        <p class="mb-1"><strong>Subtotal:</strong> $<?php echo number_format((float)$factura['subtotal'], 2); ?></p>
-                        <p class="mb-1"><strong>Impuesto:</strong> $<?php echo number_format((float)$factura['impuesto'], 2); ?></p>
-                        <h5><strong>Total:</strong> $<?php echo number_format((float)$factura['total'], 2); ?></h5>
+                        <p class="mb-1"><strong>Subtotal:</strong> Bs. <?php echo number_format((float)$factura['subtotal'], 2); ?></p>
+                        <p class="mb-1"><strong>Impuesto:</strong> Bs. <?php echo number_format((float)$factura['impuesto'], 2); ?></p>
+                        <h5><strong>Total:</strong> Bs. <?php echo number_format((float)$factura['total'], 2); ?></h5>
                     </div>
                 </div>
             </div>

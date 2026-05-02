@@ -88,7 +88,7 @@ foreach ($itemsCarritoDetallado as $itemCarrito) {
                 </tbody>
             </table>
         </div>
-        <h3 class="text-right">Total: $<?php echo number_format($total, 2); ?></h3>
+        <h3 class="text-right">Total: Bs. <?php echo number_format($total, 2); ?></h3>
         <div class="text-right">
             <a href="pago.php" class="btn btn-success">Proceder al Pago</a>
         </div>

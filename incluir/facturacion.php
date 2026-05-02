@@ -624,8 +624,8 @@ function construir_html_factura(array $factura): string
         $filas .= '<tr>'
             . '<td style="padding:8px;border:1px solid #ddd;">' . htmlspecialchars($item['nombre_producto']) . '</td>'
             . '<td style="padding:8px;border:1px solid #ddd;text-align:center;">' . (int)$item['cantidad'] . '</td>'
-            . '<td style="padding:8px;border:1px solid #ddd;text-align:right;">$' . number_format((float)$item['precio_unitario'], 2) . '</td>'
-            . '<td style="padding:8px;border:1px solid #ddd;text-align:right;">$' . number_format((float)$item['subtotal'], 2) . '</td>'
+            . '<td style="padding:8px;border:1px solid #ddd;text-align:right;">Bs. ' . number_format((float)$item['precio_unitario'], 2) . '</td>'
+            . '<td style="padding:8px;border:1px solid #ddd;text-align:right;">Bs. ' . number_format((float)$item['subtotal'], 2) . '</td>'
             . '</tr>';
     }
 
@@ -682,9 +682,9 @@ function construir_html_factura(array $factura): string
         . '</tr></thead>'
         . '<tbody>' . $filas . '</tbody>'
         . '</table>'
-        . '<p style="margin-top:16px;"><strong>Subtotal:</strong> $' . number_format((float)$factura['subtotal'], 2) . '</p>'
-        . '<p><strong>Impuesto:</strong> $' . number_format((float)$factura['impuesto'], 2) . '</p>'
-        . '<p><strong>Total:</strong> $' . number_format((float)$factura['total'], 2) . '</p>'
+        . '<p style="margin-top:16px;"><strong>Subtotal:</strong> Bs. ' . number_format((float)$factura['subtotal'], 2) . '</p>'
+        . '<p><strong>Impuesto:</strong> Bs. ' . number_format((float)$factura['impuesto'], 2) . '</p>'
+        . '<p><strong>Total:</strong> Bs. ' . number_format((float)$factura['total'], 2) . '</p>'
         . '</div></div></body></html>';
 }
 

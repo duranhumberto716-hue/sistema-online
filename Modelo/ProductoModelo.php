@@ -66,15 +66,11 @@ class ProductoModelo
             return false;
         }
 
-        // Usar 'i' para integers y NULL para id_proveedor opcional
-        $stmt->bind_param('ssdsiiii', $nombre, $descripcion, $precio, $imagen, $stock, $id_marca, $id_industria, $id_categoria);
+        // Convertir null a 0 si es necesario para bind_param
+        $id_prov = $id_proveedor ?? 0;
         
-        // Manejar id_proveedor NULL
-        if ($id_proveedor === null) {
-            $stmt->bind_param('ssdsiiii', $nombre, $descripcion, $precio, $imagen, $stock, $id_marca, $id_industria, $id_categoria);
-        } else {
-            $stmt->bind_param('ssdsiiiii', $nombre, $descripcion, $precio, $imagen, $stock, $id_marca, $id_industria, $id_categoria, $id_proveedor);
-        }
+        // Formato: s=nombre, s=descripcion, d=precio, s=imagen, i=stock, i=id_marca, i=id_industria, i=id_categoria, i=id_proveedor
+        $stmt->bind_param('ssdsiiiii', $nombre, $descripcion, $precio, $imagen, $stock, $id_marca, $id_industria, $id_categoria, $id_prov);
         
         $ok = $stmt->execute();
         
@@ -94,11 +90,11 @@ class ProductoModelo
             return false;
         }
 
-        if ($id_proveedor === null) {
-            $stmt->bind_param('ssdsiiiii', $nombre, $descripcion, $precio, $imagen, $stock, $id_marca, $id_industria, $id_categoria, $idProducto);
-        } else {
-            $stmt->bind_param('ssdsiiiiii', $nombre, $descripcion, $precio, $imagen, $stock, $id_marca, $id_industria, $id_categoria, $id_proveedor, $idProducto);
-        }
+        // Convertir null a 0 si es necesario para bind_param
+        $id_prov = $id_proveedor ?? 0;
+        
+        // Formato: s=nombre, s=descripcion, d=precio, s=imagen, i=stock, i=id_marca, i=id_industria, i=id_categoria, i=id_proveedor, i=idProducto
+        $stmt->bind_param('ssdsiiiiii', $nombre, $descripcion, $precio, $imagen, $stock, $id_marca, $id_industria, $id_categoria, $id_prov, $idProducto);
         
         $ok = $stmt->execute();
         $stmt->close();

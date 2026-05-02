@@ -81,8 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <textarea class="form-control" id="descripcion" name="descripcion" required minlength="5" rows="4"><?php echo htmlspecialchars($producto['descripcion']); ?></textarea>
             </div>
             <div class="form-group">
-                <label for="precio">Precio:</label>
-                <input type="number" step="0.01" class="form-control" id="precio" name="precio" value="<?php echo htmlspecialchars($producto['precio']); ?>" required min="0.01">
+                <label for="precio">Precio (Bs.):</label>
+                <input type="number" step="0.01" class="form-control" id="precio" name="precio" value="<?php echo htmlspecialchars($producto['precio']); ?>" placeholder="ej: 1499.99" required min="0.01">
+                <small class="form-text text-muted">En bolivianos</small>
             </div>
             <div class="form-group">
                 <label for="stock">Stock:</label>

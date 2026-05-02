@@ -13,7 +13,7 @@ if (!function_exists('esc')) {
             <td><?php echo (int)$producto['id_producto']; ?></td>
             <td><?php echo esc((string)$producto['nombre']); ?></td>
             <td><?php echo esc((string)$producto['descripcion']); ?></td>
-            <td>$<?php echo number_format((float)$producto['precio'], 2); ?></td>
+            <td>Bs. <?php echo number_format((float)$producto['precio'], 2); ?></td>
             <td><?php echo (int)$producto['stock']; ?></td>
             <td>
                 <a href="editar_producto.php?id=<?php echo (int)$producto['id_producto']; ?>" class="btn btn-warning btn-sm">Editar</a>

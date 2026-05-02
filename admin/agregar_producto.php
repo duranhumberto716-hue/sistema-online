@@ -67,9 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <small class="form-text text-muted">Mínimo 5 caracteres</small>
             </div>
             <div class="form-group">
-                <label for="precio">Precio:</label>
-                <input type="number" step="0.01" class="form-control" id="precio" name="precio" required min="0.01">
-                <small class="form-text text-muted">Debe ser mayor a 0</small>
+                <label for="precio">Precio (Bs.):</label>
+                <input type="number" step="0.01" class="form-control" id="precio" name="precio" placeholder="ej: 1499.99" required min="0.01">
+                <small class="form-text text-muted">En bolivianos. Debe ser mayor a 0</small>
             </div>
             <div class="form-group">
                 <label for="stock">Stock:</label>

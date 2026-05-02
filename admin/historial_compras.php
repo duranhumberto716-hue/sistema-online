@@ -87,8 +87,8 @@ if ($consultaVentas instanceof mysqli_result) {
                                     <td><?php echo esc_historial((string)$item['session_id']); ?></td>
                                     <td><?php echo esc_historial((string)$item['nombre']); ?></td>
                                     <td><?php echo (int)$item['cantidad']; ?></td>
-                                    <td>$<?php echo number_format((float)$item['precio'], 2); ?></td>
-                                    <td>$<?php echo number_format((float)$item['subtotal'], 2); ?></td>
+                                    <td>Bs. <?php echo number_format((float)$item['precio'], 2); ?></td>
+                                    <td>Bs. <?php echo number_format((float)$item['subtotal'], 2); ?></td>
                                     <td><?php echo esc_historial((string)$item['fecha_actualizacion']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -126,8 +126,8 @@ if ($consultaVentas instanceof mysqli_result) {
                                     <td><?php echo esc_historial((string)$item['forma_pago']); ?></td>
                                     <td><?php echo esc_historial((string)$item['nombre']); ?></td>
                                     <td><?php echo (int)$item['cantidad']; ?></td>
-                                    <td>$<?php echo number_format((float)$item['precio_unitario'], 2); ?></td>
-                                    <td>$<?php echo number_format((float)$item['subtotal'], 2); ?></td>
+                                    <td>Bs. <?php echo number_format((float)$item['precio_unitario'], 2); ?></td>
+                                    <td>Bs. <?php echo number_format((float)$item['subtotal'], 2); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
