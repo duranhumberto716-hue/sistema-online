@@ -356,6 +356,12 @@
                     <a class="nav-link" href="<?php echo $basePath; ?>/pago.php">Pagar</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="<?php echo $basePath; ?>/chat_app/chat.php" style="display: flex; align-items: center; gap: 8px;">
+                        <span>💬</span>
+                        <span>Chat</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="<?php echo $basePath; ?>/admin/inicio_sesion.php">Iniciar sesión</a>
                 </li>
                 <li class="nav-item">
