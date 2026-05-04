@@ -6,5 +6,13 @@
         "texto": "hola",
         "tipo": "global",
         "timestamp": "2026-05-02 18:03:20"
+    },
+    {
+        "id": 2,
+        "usuario_id": "usuario_69f61d24810a27.79550174",
+        "nombre_usuario": "Cliente Demo",
+        "texto": "\u00a1Hola! Chat en modal flotante",
+        "tipo": "global",
+        "timestamp": "2026-05-05 00:55:19"
     }
 ]

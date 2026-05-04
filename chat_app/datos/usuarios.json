@@ -2,7 +2,13 @@
     "usuario_69f61dd7f3f1a8.22044047": {
         "usuario_id": "usuario_69f61dd7f3f1a8.22044047",
         "nombre": "Humby",
-        "timestamp": "2026-05-05 00:50:50",
+        "timestamp": "2026-05-05 00:56:07",
+        "estado": "online"
+    },
+    "usuario_69f61d24810a27.79550174": {
+        "usuario_id": "usuario_69f61d24810a27.79550174",
+        "nombre": "Cliente Demo",
+        "timestamp": "2026-05-05 00:55:13",
         "estado": "online"
     }
 }

@@ -318,6 +318,94 @@
             }
         }
 
+        /* Modal de Chat Flotante */
+        .chat-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        .chat-modal-overlay.active {
+            display: block;
+        }
+
+        .chat-modal {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 420px;
+            height: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid #ddd;
+        }
+
+        .chat-modal.active {
+            display: flex;
+        }
+
+        .chat-modal-header {
+            background: linear-gradient(90deg, #0a1f44, #102c63);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .chat-modal-header button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-modal-header button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+
+        .chat-modal-content {
+            flex: 1;
+            overflow: hidden;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .chat-modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 0 0 12px 12px;
+        }
+
+        @media (max-width: 768px) {
+            .chat-modal {
+                width: calc(100% - 40px);
+                height: calc(100vh - 100px);
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+            }
+        }
+
     </style>
 
     <nav class="navbar navbar-expand-lg navbar-duran">
@@ -356,10 +444,10 @@
                     <a class="nav-link" href="<?php echo $basePath; ?>/pago.php">Pagar</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $basePath; ?>/chat_app/chat.php" style="display: flex; align-items: center; gap: 8px;">
+                    <button class="nav-link" onclick="abrirChatModal()" style="background: none; border: none; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 8px; cursor: pointer;">
                         <span>💬</span>
                         <span>Chat</span>
-                    </a>
+                    </button>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo $basePath; ?>/admin/inicio_sesion.php">Iniciar sesión</a>
@@ -370,3 +458,47 @@
             </ul>
         </div>
     </nav>
+
+    <!-- Modal de Chat Flotante -->
+    <div class="chat-modal-overlay" id="chatModalOverlay" onclick="cerrarChatModal()"></div>
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-modal-header">
+            <span>💬 Chat en Vivo</span>
+            <button onclick="cerrarChatModal()">✕</button>
+        </div>
+        <div class="chat-modal-content">
+            <iframe id="chatIframe" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        function abrirChatModal() {
+            const modal = document.getElementById('chatModal');
+            const overlay = document.getElementById('chatModalOverlay');
+            const iframe = document.getElementById('chatIframe');
+            
+            // Establecer la ruta correcta según la página actual
+            let basePath = '/sistema-online';
+            iframe.src = basePath + '/chat_app/chat.php';
+            
+            modal.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        function cerrarChatModal() {
+            const modal = document.getElementById('chatModal');
+            const overlay = document.getElementById('chatModalOverlay');
+            const iframe = document.getElementById('chatIframe');
+            
+            modal.classList.remove('active');
+            overlay.classList.remove('active');
+            iframe.src = '';
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                cerrarChatModal();
+            }
+        });
+    </script>
