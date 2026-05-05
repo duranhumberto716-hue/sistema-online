@@ -627,29 +627,30 @@ $usuario_id = $_SESSION['usuario_id'];
                     
                     // Agregar usuarios nuevos
                     data.usuarios.forEach(usuario => {
-                        if (usuario.usuario_id !== USUARIO_ID) {
-                            const div = document.createElement('div');
-                            div.className = 'usuario-item';
-                            if (chatActual === usuario.usuario_id) {
-                                div.classList.add('active');
-                            }
-                            
-                            const inicial = usuario.nombre.charAt(0).toUpperCase();
-                            div.innerHTML = `
-                                <div class="usuario-content" onclick="seleccionarChat('${usuario.usuario_id}', '${usuario.nombre.replace(/'/g, "\\'")}')">
-                                    <div class="usuario-avatar">${inicial}</div>
-                                    <div class="usuario-info">
-                                        <div class="usuario-nombre">${usuario.nombre}</div>
-                                        <div class="usuario-estado"><span class="online-indicator"></span> En línea</div>
-                                    </div>
-                                </div>
-                                <div class="usuario-actions">
-                                    <button class="btn-delete-usuario" onclick="eliminarUsuarioChat('${usuario.usuario_id}', '${usuario.nombre.replace(/'/g, "\\'")}', event)">✕</button>
-                                </div>
-                            `;
-                            
-                            usuariosDiv.appendChild(div);
+                        const div = document.createElement('div');
+                        div.className = 'usuario-item';
+                        if (chatActual === usuario.usuario_id) {
+                            div.classList.add('active');
                         }
+                        
+                        const inicial = usuario.nombre.charAt(0).toUpperCase();
+                        const esUsuarioActual = usuario.usuario_id === USUARIO_ID;
+                        const nombreMostrado = esUsuarioActual ? usuario.nombre + ' (Tú)' : usuario.nombre;
+                        
+                        div.innerHTML = `
+                            <div class="usuario-content" onclick="seleccionarChat('${usuario.usuario_id}', '${usuario.nombre.replace(/'/g, "\\'")}')">
+                                <div class="usuario-avatar">${inicial}</div>
+                                <div class="usuario-info">
+                                    <div class="usuario-nombre">${nombreMostrado}</div>
+                                    <div class="usuario-estado"><span class="online-indicator"></span> En línea</div>
+                                </div>
+                            </div>
+                            ${!esUsuarioActual ? `<div class="usuario-actions">
+                                <button class="btn-delete-usuario" onclick="eliminarUsuarioChat('${usuario.usuario_id}', '${usuario.nombre.replace(/'/g, "\\'")}', event)">✕</button>
+                            </div>` : ''}
+                        `;
+                        
+                        usuariosDiv.appendChild(div);
                     });
                 }
             } catch (error) {

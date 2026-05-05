@@ -406,6 +406,46 @@
             }
         }
 
+        /* Botón Flotante de Chat */
+        .chat-floating-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            z-index: 998;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .chat-floating-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        .chat-floating-button:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            .chat-floating-button {
+                bottom: 20px;
+                right: 20px;
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+        }
+
     </style>
 
     <nav class="navbar navbar-expand-lg navbar-duran">
@@ -444,12 +484,6 @@
                     <a class="nav-link" href="<?php echo $basePath; ?>/pago.php">Pagar</a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link" onclick="abrirChatModal()" style="background: none; border: none; padding: 0.5rem 1rem; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                        <span>💬</span>
-                        <span>Chat</span>
-                    </button>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="<?php echo $basePath; ?>/admin/inicio_sesion.php">Iniciar sesión</a>
                 </li>
                 <li class="nav-item">
@@ -470,6 +504,11 @@
             <iframe id="chatIframe" src=""></iframe>
         </div>
     </div>
+
+    <!-- Botón Flotante de Chat -->
+    <button class="chat-floating-button" onclick="abrirChatModal()" title="Abrir chat">
+        💬
+    </button>
 
     <script>
         function abrirChatModal() {

@@ -3,16 +3,16 @@
         "id": 1,
         "usuario_id": "usuario_69f61dd7f3f1a8.22044047",
         "nombre_usuario": "Humby",
-        "texto": "hola",
+        "texto": "Hola",
         "tipo": "global",
-        "timestamp": "2026-05-02 18:03:20"
+        "timestamp": "2026-05-05 01:07:35"
     },
     {
         "id": 2,
-        "usuario_id": "usuario_69f61d24810a27.79550174",
-        "nombre_usuario": "Cliente Demo",
-        "texto": "\u00a1Hola! Chat en modal flotante",
+        "usuario_id": "usuario_69f9273f4a1ee8.48960716",
+        "nombre_usuario": "we",
+        "texto": "we",
         "tipo": "global",
-        "timestamp": "2026-05-05 00:55:19"
+        "timestamp": "2026-05-05 01:14:17"
     }
 ]
