@@ -14,5 +14,13 @@
         "texto": "we",
         "tipo": "global",
         "timestamp": "2026-05-05 01:14:17"
+    },
+    {
+        "id": 3,
+        "usuario_id": "usuario_69f61dd7f3f1a8.22044047",
+        "nombre_usuario": "Humby",
+        "texto": "Hola",
+        "tipo": "global",
+        "timestamp": "2026-05-07 01:35:03"
     }
 ]

@@ -329,7 +329,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <button type="submit" class="btn btn-primary btn-login btn-block">Iniciar Sesión</button>
                 </form>
-            </div>
+
+                <div style="text-align: center; margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+                    <p style="color: var(--duran-texto-secundario); margin: 0;">¿No tienes cuenta? 
+                        <a href="../registro.php" style="color: var(--duran-azul-brillante); text-decoration: none; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.color='#2563eb'; this.style.textDecoration='underline'" onmouseout="this.style.color='var(--duran-azul-brillante)'; this.style.textDecoration='none'">
+                            Crear Cuenta
+                        </a>
+                    </p>
+                </div>
         </section>
     </div>
 

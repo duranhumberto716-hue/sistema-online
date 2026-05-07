@@ -1,9 +1,17 @@
 -- =========================================
--- ELIMINAR Y CREAR BASE DE DATOS (MySQL/MariaDB)
+-- ELIMINAR Y CREAR BASE DE DATOS
 -- =========================================
 DROP DATABASE IF EXISTS sistema_online;
 CREATE DATABASE sistema_online CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE sistema_online;
+
+-- =========================================
+-- TABLA ROLES
+-- =========================================
+CREATE TABLE roles (
+    id_rol INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(20) NOT NULL UNIQUE
+) ENGINE=InnoDB;
 
 -- =========================================
 -- TABLA USUARIOS
@@ -11,7 +19,9 @@ USE sistema_online;
 CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     usuario VARCHAR(40) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    id_rol INT NOT NULL,
+    FOREIGN KEY (id_rol) REFERENCES roles(id_rol)
 ) ENGINE=InnoDB;
 
 -- =========================================
@@ -54,10 +64,10 @@ CREATE TABLE productos (
     id_industria INT NOT NULL,
     id_categoria INT NOT NULL,
     id_proveedor INT,
-    CONSTRAINT FK_producto_marca FOREIGN KEY (id_marca) REFERENCES Marca(id_marca),
-    CONSTRAINT FK_producto_industria FOREIGN KEY (id_industria) REFERENCES Industria(id_industria),
-    CONSTRAINT FK_producto_categoria FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria),
-    CONSTRAINT FK_producto_proveedor FOREIGN KEY (id_proveedor) REFERENCES Proveedor(id_proveedor)
+    FOREIGN KEY (id_marca) REFERENCES Marca(id_marca),
+    FOREIGN KEY (id_industria) REFERENCES Industria(id_industria),
+    FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria),
+    FOREIGN KEY (id_proveedor) REFERENCES Proveedor(id_proveedor)
 ) ENGINE=InnoDB;
 
 -- =========================================
@@ -81,8 +91,8 @@ CREATE TABLE ventas (
     id_usuario INT NOT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
-    CONSTRAINT FK_venta_cliente FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
-    CONSTRAINT FK_venta_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 ) ENGINE=InnoDB;
 
 -- =========================================
@@ -95,8 +105,8 @@ CREATE TABLE detalle_ventas (
     cantidad INT NOT NULL,
     precio DECIMAL(10,2) NOT NULL,
     subtotal DECIMAL(10,2) NOT NULL,
-    CONSTRAINT FK_detalle_venta FOREIGN KEY (id_venta) REFERENCES ventas(id_venta),
-    CONSTRAINT FK_detalle_producto FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+    FOREIGN KEY (id_venta) REFERENCES ventas(id_venta),
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
 ) ENGINE=InnoDB;
 
 -- =========================================
@@ -114,15 +124,17 @@ CREATE TABLE ItemNotaVenta (
     id_producto INT NOT NULL,
     cantidad INT NOT NULL,
     precio DECIMAL(10,2) NOT NULL,
-    CONSTRAINT FK_item_nota FOREIGN KEY (id_nota) REFERENCES NotaVenta(id_nota),
-    CONSTRAINT FK_item_producto FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+    FOREIGN KEY (id_nota) REFERENCES NotaVenta(id_nota),
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
 ) ENGINE=InnoDB;
 
 -- =========================================
 -- DATOS DE PRUEBA
 -- =========================================
-INSERT INTO usuarios (usuario, password)
-VALUES ('humby', 'Duran716');
+INSERT INTO roles (nombre) VALUES ('admin'), ('usuario');
+
+INSERT INTO usuarios (usuario, password, id_rol)
+VALUES ('humby', 'Duran716', 1);
 
 INSERT INTO Marca (nombre) VALUES ('Samsung'), ('LG');
 INSERT INTO Industria (nombre) VALUES ('Tecnologia');
@@ -132,10 +144,8 @@ INSERT INTO Proveedor (nombre, direccion, telefono)
 VALUES ('Proveedor1', 'Av. Principal', '12345678');
 
 INSERT INTO productos (nombre, descripcion, precio, imagen, estado, stock, id_marca, id_industria, id_categoria, id_proveedor)
-VALUES ('Televisor', 'Smart TV 50 pulgadas', 3500, NULL, 'activo', 15, 1, 1, 1, 1);
-
-INSERT INTO productos (nombre, descripcion, precio, imagen, estado, stock, id_marca, id_industria, id_categoria, id_proveedor)
 VALUES
+('Televisor', 'Smart TV 50 pulgadas', 3500, NULL, 'activo', 15, 1, 1, 1, 1),
 ('Mouse', 'Mouse óptico inalámbrico', 120.00, NULL, 'activo', 30, 1, 1, 1, 1),
 ('Teclado', 'Teclado mecánico retroiluminado', 280.00, NULL, 'activo', 20, 1, 1, 1, 1),
 ('Monitor', 'Monitor Full HD de 24 pulgadas', 950.00, NULL, 'activo', 12, 1, 1, 1, 1),

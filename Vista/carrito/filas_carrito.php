@@ -3,16 +3,14 @@
         <tr>
             <td><?php echo htmlspecialchars((string)$item['nombre'], ENT_QUOTES, 'UTF-8'); ?></td>
             <td><?php echo (int)$item['cantidad']; ?></td>
-            <td>$<?php echo number_format((float)$item['precio'], 2); ?></td>
-            <td>$<?php echo number_format((float)$item['subtotal'], 2); ?></td>
+            <td>Bs. <?php echo number_format((float)$item['precio'], 2); ?></td>
+            <td>Bs. <?php echo number_format((float)$item['subtotal'], 2); ?></td>
             <td>
-                <form action="carrito.php" method="GET" class="d-inline-flex align-items-center mb-1 mr-1">
-                    <input type="hidden" name="accion" value="actualizar">
-                    <input type="hidden" name="id" value="<?php echo (int)$item['id_producto']; ?>">
-                    <input type="number" name="cantidad" min="0" value="<?php echo (int)$item['cantidad']; ?>" class="form-control form-control-sm mr-1" style="width: 78px;">
-                    <button type="submit" class="btn btn-primary btn-sm">Actualizar</button>
-                </form>
-                <a href="carrito.php?accion=eliminar&id=<?php echo (int)$item['id_producto']; ?>" class="btn btn-danger btn-sm mb-1">Eliminar</a>
+                <div class="d-flex gap-2">
+                    <input type="number" id="cantidad_<?php echo (int)$item['id_producto']; ?>" min="0" value="<?php echo (int)$item['cantidad']; ?>" class="form-control form-control-sm" style="width: 70px;">
+                    <button onclick="actualizarCantidad(<?php echo (int)$item['id_producto']; ?>, document.getElementById('cantidad_<?php echo (int)$item['id_producto']; ?>').value)" class="btn btn-primary btn-sm">Actualizar</button>
+                    <button onclick="eliminarDelCarrito(<?php echo (int)$item['id_producto']; ?>)" class="btn btn-danger btn-sm">Eliminar</button>
+                </div>
             </td>
         </tr>
     <?php endforeach; ?>

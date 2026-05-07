@@ -21,6 +21,12 @@
         }
     }
 
+    // Ajustar basePath para los links - si estamos en admin, ir a raíz
+    $rutaNavegacion = $basePublica;
+    if ($rutaNavegacion === '' || $rutaNavegacion === null) {
+        $rutaNavegacion = '/sistema-online';
+    }
+
     $cantidadCarrito = 0;
     $sessionIdVista = '';
 
@@ -232,11 +238,6 @@
             color: var(--duran-blanco);
         }
 
-        .badge-carrito {
-            background-color: var(--duran-blanco);
-            color: var(--duran-azul-oscuro);
-            border-color: rgba(255, 255, 255, 0.35);
-        }
 
         .container .row > [class*="col-"] .card {
             background: var(--duran-blanco);
@@ -252,33 +253,16 @@
             color: var(--duran-texto-secundario) !important;
         }
 
-        .badge-carrito {
-            display: inline-flex;
-            min-width: 15px;
-            height: 15px;
-            padding: 0 3px;
-            border-radius: 999px;
-            font-size: 0.58rem;
-            font-weight: 700;
-            align-items: center;
-            justify-content: center;
-            color: var(--duran-azul-oscuro);
-            background-color: var(--duran-blanco);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-        }
-
         .nav-link-carrito {
             position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            padding: 0.5rem 1rem !important;
         }
 
         .indicador-carrito {
-            position: absolute;
-            top: -4px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
             display: inline-flex;
             align-items: center;
             gap: 3px;
@@ -286,11 +270,29 @@
         }
 
         .icono-carrito-mini {
-            width: 20px;
-            height: 20px;
+            width: 28px;
+            height: 28px;
             fill: var(--duran-gris-claro);
             stroke: var(--duran-gris-claro);
             stroke-width: 0.7;
+        }
+
+        .badge-carrito {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            display: inline-flex;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            align-items: center;
+            justify-content: center;
+            color: var(--duran-azul-oscuro);
+            background-color: var(--duran-blanco);
+            border: 1px solid rgba(255, 255, 255, 0.35);
         }
 
         .navbar-brand img {
@@ -420,11 +422,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
             z-index: 998;
             transition: all 0.3s ease;
             text-decoration: none;
+            padding: 0;
         }
 
         .chat-floating-button:hover {
@@ -436,24 +438,35 @@
             transform: scale(0.95);
         }
 
+        .chat-icon {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+        }
+
         @media (max-width: 768px) {
             .chat-floating-button {
                 bottom: 20px;
                 right: 20px;
                 width: 56px;
                 height: 56px;
-                font-size: 24px;
+            }
+
+            .chat-icon {
+                width: 26px;
+                height: 26px;
             }
         }
 
     </style>
 
     <nav class="navbar navbar-expand-lg navbar-duran">
-        <a class="navbar-brand" href="<?php echo $basePath; ?>/index.php">
+        <a class="navbar-brand" href="<?php echo $rutaNavegacion; ?>/index.php">
             <img src="<?php echo rtrim($basePublica, '/'); ?>/recursos/logo.svg" width="58" height="58" alt="Logo Duran" class="d-inline-block align-top rounded mr-2" style="object-fit: cover;">
             <span class="navbar-brand-texto">Duran</span>
         </a>
-        <form class="navbar-buscador d-none d-lg-block" method="GET" action="<?php echo $basePath; ?>/index.php">
+        <form class="navbar-buscador d-none d-lg-block" method="GET" action="<?php echo $rutaNavegacion; ?>/index.php">
             <div class="input-group">
                 <input type="text" class="form-control" name="buscar" placeholder="Buscar productos" value="<?php echo htmlspecialchars(trim($_GET['buscar'] ?? '')); ?>">
                 <div class="input-group-append">
@@ -467,27 +480,25 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $basePath; ?>/index.php">Inicio</a>
+                    <a class="nav-link" href="<?php echo $rutaNavegacion; ?>/index.php">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-carrito" href="<?php echo $basePath; ?>/carrito.php" aria-label="Carrito de compras">
+                    <a class="nav-link nav-link-carrito" href="<?php echo $rutaNavegacion; ?>/carrito.php" aria-label="Carrito de compras">
                         <span class="indicador-carrito" aria-hidden="true">
                             <svg class="icono-carrito-mini" viewBox="0 0 24 24" focusable="false">
                                 <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.17 14h9.92c.75 0 1.41-.41 1.75-1.03L22 6.5A1 1 0 0 0 21.12 5H6.21l-.45-2.02A1 1 0 0 0 4.78 2H2a1 1 0 1 0 0 2h1.98l2.23 10.01A2 2 0 0 0 8.17 16H19a1 1 0 1 0 0-2H8.17z"></path>
                             </svg>
-                            <span class="badge-carrito"><?php echo (int)$cantidadCarrito; ?></span>
+                            <?php if ((int)$cantidadCarrito > 0): ?>
+                                <span class="badge-carrito"><?php echo (int)$cantidadCarrito; ?></span>
+                            <?php endif; ?>
                         </span>
-                        <span>Carrito</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $basePath; ?>/pago.php">Pagar</a>
+                    <a class="nav-link" href="<?php echo $rutaNavegacion; ?>/pago.php">Pagar</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $basePath; ?>/admin/inicio_sesion.php">Iniciar sesión</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $basePath; ?>/registro.php">Registrar</a>
+                    <a class="nav-link" href="<?php echo $rutaNavegacion; ?>/admin/inicio_sesion.php">Iniciar sesión</a>
                 </li>
             </ul>
         </div>
@@ -497,7 +508,7 @@
     <div class="chat-modal-overlay" id="chatModalOverlay" onclick="cerrarChatModal()"></div>
     <div class="chat-modal" id="chatModal">
         <div class="chat-modal-header">
-            <span>💬 Chat en Vivo</span>
+            <span><img src="<?php echo $basePublica; ?>/recursos/chat.png" alt="Chat" style="width: 20px; height: 20px; margin-right: 8px; object-fit: contain;">Chat en Vivo</span>
             <button onclick="cerrarChatModal()">✕</button>
         </div>
         <div class="chat-modal-content">
@@ -507,7 +518,7 @@
 
     <!-- Botón Flotante de Chat -->
     <button class="chat-floating-button" onclick="abrirChatModal()" title="Abrir chat">
-        💬
+        <img src="<?php echo $basePublica; ?>/recursos/chat.png" alt="Chat" class="chat-icon">
     </button>
 
     <script>
@@ -517,8 +528,8 @@
             const iframe = document.getElementById('chatIframe');
             
             // Establecer la ruta correcta según la página actual
-            let basePath = '/sistema-online';
-            iframe.src = basePath + '/chat_app/chat.php';
+            let rutaChat = '<?php echo $rutaNavegacion; ?>';
+            iframe.src = rutaChat + '/chat_app/chat.php';
             
             modal.classList.add('active');
             overlay.classList.add('active');
